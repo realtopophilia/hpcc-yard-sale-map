@@ -28,6 +28,8 @@
     background:linear-gradient(135deg,#1d4d3b,#2a6b52);color:#fff;
   }
   header .title{font-family:"Playfair Display",serif;font-weight:800;font-size:20px;line-height:1.1}
+  #treeLink{flex:none;display:flex;align-items:center}
+  #treeLink img{height:42px;width:auto;display:block}
   header .sub{font-size:12px;opacity:.85}
   header .spacer{flex:1}
   header .count{font-size:12px;background:rgba(255,255,255,.15);padding:4px 10px;border-radius:99px;white-space:nowrap}
@@ -199,9 +201,12 @@
 <body>
 
 <header>
+  <a id="treeLink" href="https://hpccpgh.org/yardsale" target="_blank" rel="noopener" title="HPCC Yard Sale page">
+    <img src="tree-white.png" alt="HPCC tree logo">
+  </a>
   <div>
     <div class="title">Highland Park Neighborhood Yard Sale</div>
-    <div class="sub">Sunday, June 14, 2026 &middot; 9am&ndash;3pm &middot; Pittsburgh, PA</div>
+    <div class="sub">Sun, 6/14 9am-3pm</div>
   </div>
   <div class="spacer"></div>
   <div class="count" id="houseCount"></div>
@@ -443,12 +448,56 @@ document.addEventListener('DOMContentLoaded', () => {
     { name: "Darnella Darling Delights", url: "https://darnelladarlingdelightsllc.com/" },
     { name: "Bob Bates Popcorn" }
   ];
-  // Owner prefers a short overview over a full vendor list (no highlights).
   const VENDOR_OVERVIEW = `
     <p>40+ vendors line Bryant Street with handmade jewelry and crochet, vintage and
     Y2K fashion, native plants, original art and prints, Pokémon and sports cards,
     home goods, wellness treatments, shaved ice, and tables from community
     organizations.</p>`;
+  // Flea market vendor list (from the 2026 sign-up sheet; alphabetical by name)
+  const VENDORS = [
+    { name: "Amma Wendy Odusanya", items: "ASE Recovery — massage and wellness treatments" },
+    { name: "Breanna Jay", items: "Handmade earrings, hair clips, homewares and fidgets" },
+    { name: "Brett Mason", items: "Paintings and prints" },
+    { name: "Bridgette Bey", items: "Shoes and clothing" },
+    { name: "C Austin", items: "Home goods, perfumes, bikes, adult & kids clothes and shoes, eyewear, electronics, beauty/skincare, accessories, tools" },
+    { name: "Carol Rinas", items: "adidas accessories sample sale — backpacks, hats, socks, duffel bags and other fashion bags" },
+    { name: "Cassa Hadley", items: "Toys (Squishmallows, board games), household & vintage items" },
+    { name: "Chao Li", items: "Clothes, shoes, suitcases" },
+    { name: "Chloe Weiss", items: "Cute jewelry, art, plants and more" },
+    { name: "Christina Hoenig", items: "Native plants (herbaceous perennials, shrubs)" },
+    { name: "Crystal King", items: "Household items, women's clothing, baby items, costume jewelry" },
+    { name: "Dacell Childs", items: "Clothing, household items" },
+    { name: "Darlene Lawson", items: "" },
+    { name: "Debra King", items: "" },
+    { name: "Elisa Marshall", items: "Household & children's items, sports, toys, clothing, vintage comics, books, vinyl" },
+    { name: "Erin Jones", items: "Ellis School" },
+    { name: "Haley Morris", items: "Handcrafted earrings in sustainably and ethically sourced metals — natural and animal themes, recycled contents" },
+    { name: "Jill and David Weiss and Hance", items: "" },
+    { name: "John McPeak", items: "Flower planters, cutting boards, bird houses, hand tools, new wood benches" },
+    { name: "Julie Shannon", items: "Retro/vintage clothes and knick knacks" },
+    { name: "Karina Newsome", items: "PRT (Pittsburgh Regional Transit)" },
+    { name: "Kennedy Landers", items: "Knick knacks, kitchen & craft supplies, Y2K/vintage clothes, purses, shoes" },
+    { name: "Laurie Sloan", items: "Custom beaded bracelets, vintage home goods and pottery" },
+    { name: "Lori Cullen", items: "iGeneration Youth" },
+    { name: "Marquette Evans", items: "Clothes, jewelry, bike, toys, books, housewares, picture frames" },
+    { name: "Mashiyat Ahmed", items: "Women's clothing and jewelry, homeware" },
+    { name: "Michael Hansom", items: "Clothes, shoes and accessories" },
+    { name: "Michelle Boyle", items: "11th Ward Democratic Committee" },
+    { name: "Nicky Snyder", items: "" },
+    { name: "Paula Guy", items: "Crocheted dolls, blankets, animals, clothing and more" },
+    { name: "Petro Petryshyn", items: "Fine art by Ukrainian artist Petro Petryshyn — materials repurposed via the Center for Creative Reuse. Stop by and say hello!" },
+    { name: "Rachel Sadeh", items: "Clothes, antiques, toys, books" },
+    { name: "Rebecca Clark", items: "Home goods, books, games, kids clothes & toys" },
+    { name: "Shannon Worrell-Deferrari", items: "Clothing, chair massage, jewelry" },
+    { name: "Staci Minor", items: "Crochet and wooden purses, resin nightlights, 3D-printed phone stands, tumblers" },
+    { name: "Sylvia Celeste Deaderick", items: "Women's fur & leather outerwear, formal to sporty attire, shoes & boots, wall art, newborn–3T girls clothing" },
+    { name: "Tawnya Darwin", items: "Food plates, desserts and drinks" },
+    { name: "The Garden Girls", items: "Organically grown native plants (flowers, shrubs, grasses), vegetable and herb plants" },
+    { name: "Tonya Galloway-McKenzie", items: "Men's clothing XL–2X, shoes 10.5/11, lamps, tables, kitchenware, costume jewelry" },
+    { name: "Tracey Hopkins", items: "Household, clothes, lamps" },
+    { name: "Vinnie Branch", items: "Shaved ice!" },
+    { name: "Wyatt Macejka", items: "Pokemon & sports cards, vinyl, kitchenware, grill, car parts, art, vintage & more" }
+  ];
 
   // The festival is a special stop with a tent icon. Flea market vendor
   // list gets added to its items/popup when provided.
@@ -857,8 +906,11 @@ document.addEventListener('DOMContentLoaded', () => {
           `<li>${x.url ? `<a href="${x.url}" target="_blank" rel="noopener">${x.name}</a>` : x.name}</li>`
         ).join("") + `</ul>`
       : `<div class="fest-empty">Food truck lineup coming soon.</div>`;
-    h += `<div class="fest-h">\u{1F6CD}️ Flea Market Vendors (40+)</div>`;
+    h += `<div class="fest-h">\u{1F6CD}️ Flea Market Vendors (${VENDORS.length})</div>`;
     h += VENDOR_OVERVIEW;
+    h += `<ul class="fest-list">` + VENDORS.map(v =>
+      `<li><span class="t">${v.name}</span>${v.items ? " — " + v.items : ""}</li>`
+    ).join("") + `</ul>`;
     document.getElementById("festBody").innerHTML = h;
   }
   function openFestival() {
