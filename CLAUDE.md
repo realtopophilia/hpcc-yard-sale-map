@@ -57,7 +57,7 @@ The welcome modal doubles as the how-to guide (icon-led bullets) and is reopenab
 ## Operations
 
 - **Day-of announcements:** set the `ANNOUNCEMENT` constant (top of the script) to a short message and push — a dismissible gold banner appears under the header for everyone. Empty string = hidden.
-- **Visit counts:** GoatCounter tag points at `hpcc-yardsale.goatcounter.com`. The owner must register that code (free) at goatcounter.com for counting to start; the tag is silent until then. Dashboard + CSV export live at that subdomain afterward.
+- **Visit counts:** GoatCounter is registered and live — dashboard + CSV export at https://griessjason.goatcounter.com (owner's account).
 - **Social previews:** Open Graph tags + `og-preview.png` (1200×630, generated with System.Drawing from the logo). If the canonical URL ever changes (e.g. custom domain), update `og:url` and `og:image`.
 
 ## Pending content (placeholders the owner will supply)
