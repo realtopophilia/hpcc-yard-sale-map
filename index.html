@@ -4,7 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Highland Park Neighborhood Yard Sale 2026</title>
+<meta name="description" content="162 households + the Bryant Street Festival. Sunday, June 14, 2026, 9am-3pm. Search what neighbors are selling and build your route.">
+<meta property="og:title" content="2026 Highland Park Yard Sale Map">
+<meta property="og:description" content="162 households + the Bryant Street Festival. Sunday, June 14, 9am-3pm. Search what neighbors are selling and build your walking route.">
+<meta property="og:image" content="https://realtopophilia.github.io/hpcc-yard-sale-map/og-preview.png">
+<meta property="og:url" content="https://realtopophilia.github.io/hpcc-yard-sale-map/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/jpeg" href="hpcc-logo.jpg">
+<!-- Privacy-friendly visit counter (GoatCounter): no cookies, no personal data.
+     Activates once HPCC registers the free "hpcc-yardsale" account; silent until then. -->
+<script data-goatcounter="https://hpcc-yardsale.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
@@ -47,6 +57,16 @@
   }
   #findBtn:hover{background:rgba(255,255,255,.28)}
   #findBtn.on{background:var(--gold);border-color:var(--gold);color:#3a2c00}
+
+  /* day-of announcement banner (floats over the map; never shifts layout) */
+  #announce{
+    position:fixed;top:calc(var(--headerH) + 10px);left:50%;transform:translateX(-50%);
+    z-index:2000;max-width:min(92vw,560px);display:flex;align-items:center;gap:10px;
+    background:var(--gold);color:#3a2c00;font-size:13.5px;font-weight:600;
+    padding:9px 12px 9px 16px;border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.25);
+  }
+  #announce.hidden{display:none}
+  #announce button{border:none;background:none;font-size:18px;cursor:pointer;color:#3a2c00;line-height:1;flex:none;padding:0}
 
   /* "you are here" dot */
   .me-dot{
@@ -220,6 +240,11 @@
   <button id="helpBtn" onclick="openHelp()" aria-label="How it works" title="How it works">?</button>
 </header>
 
+<div id="announce" class="hidden" role="status">
+  <span id="announceTxt"></span>
+  <button onclick="document.getElementById('announce').classList.add('hidden')" aria-label="Dismiss">&times;</button>
+</div>
+
 <div id="app">
   <aside id="sidebar">
     <div id="sheetHandle" aria-label="Open list"><div class="grip"></div></div>
@@ -267,6 +292,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
+
+  // Day-of announcement — put a short message in the quotes and push to show
+  // a dismissible banner to everyone (e.g. "Rain update: music starts at 11:30").
+  // Empty string = no banner.
+  const ANNOUNCEMENT = "";
 
   /* =====================================================================
      SALE DATA — real 2026 sign-ups (geocoded via US Census geocoder).
@@ -1006,6 +1036,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let welcomeSeen = false;
   try { welcomeSeen = !!localStorage.getItem(WELCOME_KEY); } catch (e) {}
   if (!welcomeSeen) document.getElementById("welcome").classList.remove("hidden");
+
+  /* ---------- announcement banner ---------- */
+  if (ANNOUNCEMENT) {
+    document.getElementById("announceTxt").textContent = ANNOUNCEMENT;
+    document.getElementById("announce").classList.remove("hidden");
+  }
 
   /* ---------- header count ---------- */
   document.getElementById("houseCount").textContent =

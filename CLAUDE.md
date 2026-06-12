@@ -54,6 +54,12 @@ The welcome modal doubles as the how-to guide (icon-led bullets) and is reopenab
 
 ≤640 px: the sidebar becomes a bottom sheet (peek height 84 px — the `PEEK` constant in `initSheetSwipe()` must match the CSS `translateY(calc(100% - 84px))`; kept tall to clear phone edge-gesture zones). The handle supports tap and swipe; the drag handler is non-passive and calls `preventDefault()` plus `overscroll-behavior-y:none` on body to stop pull-to-refresh. Tapping the map collapses the sheet. Uses `100dvh` with `100vh` fallback. Modals are `max-height`-capped and scroll so large system font sizes can always reach the buttons. Filter chips are multi-select (`activeCats` Set, OR semantics); "Food & Drink" is a real category on stops selling lemonade/baked goods/etc. Search blurs on Enter to dismiss the phone keyboard.
 
+## Operations
+
+- **Day-of announcements:** set the `ANNOUNCEMENT` constant (top of the script) to a short message and push — a dismissible gold banner appears under the header for everyone. Empty string = hidden.
+- **Visit counts:** GoatCounter tag points at `hpcc-yardsale.goatcounter.com`. The owner must register that code (free) at goatcounter.com for counting to start; the tag is silent until then. Dashboard + CSV export live at that subdomain afterward.
+- **Social previews:** Open Graph tags + `og-preview.png` (1200×630, generated with System.Drawing from the logo). If the canonical URL ever changes (e.g. custom domain), update `og:url` and `og:image`.
+
 ## Pending content (placeholders the owner will supply)
 
 - "Ben Orsburn (TBD)" sign-up — add to `STOPS` when the address is known (then regenerate the PDF).
