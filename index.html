@@ -895,13 +895,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     persist(); render(); refreshOpenPopup(addr);
   }
+  // "✓ Done" (popup) and the My List checkbox stay in sync: marking a stop
+  // done grays its pin AND checks it off the list, and vice versa.
   function toggleVisited(addr) {
-    if (visited.has(addr)) visited.delete(addr); else visited.add(addr);
+    const on = !visited.has(addr);
+    if (on) visited.add(addr); else visited.delete(addr);
+    if (saved.has(addr)) { if (on) checked.add(addr); else checked.delete(addr); }
     persist(); render(); refreshOpenPopup(addr);
   }
   function toggleChecked(addr) {
-    if (checked.has(addr)) checked.delete(addr); else checked.add(addr);
-    persist(); renderList(); updateTabs();
+    const on = !checked.has(addr);
+    if (on) checked.add(addr); else checked.delete(addr);
+    if (on) visited.add(addr); else visited.delete(addr);
+    persist(); render(); refreshOpenPopup(addr);
   }
   function filterCategory(cat) {
     if (activeCats.has(cat)) activeCats.delete(cat); else activeCats.add(cat);
