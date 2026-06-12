@@ -20,7 +20,8 @@
     --line:#e5e0d4;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0;height:100%}
+  /* overscroll-behavior blocks the browser's pull-to-refresh during sheet swipes */
+  html,body{margin:0;padding:0;height:100%;overscroll-behavior-y:none}
   body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
 
   header{
@@ -87,7 +88,7 @@
   }
   .tab.active{background:var(--gold);border-color:var(--gold);color:#3a2c00}
 
-  #stopList{list-style:none;margin:0 -12px;padding:0 12px 16px;overflow-y:auto;flex:1}
+  #stopList{list-style:none;margin:0 -12px;padding:0 12px 16px;overflow-y:auto;flex:1;overscroll-behavior:contain}
   #stopList li.stop{
     display:flex;align-items:flex-start;gap:10px;padding:10px 8px;border-bottom:1px solid #f1ede2;
     cursor:pointer;border-radius:8px;background:#fff;
@@ -134,6 +135,7 @@
     background:#fff;cursor:pointer;font-weight:600;color:var(--ink);
   }
   .pill.on{background:var(--gold);border-color:var(--gold);color:#3a2c00}
+  .pp-cta{display:block;width:100%;text-align:center;margin-bottom:9px;padding:9px 10px;font-size:13px;line-height:1.35}
   /* welcome modal */
   .modal-bg{
     position:fixed;inset:0;background:rgba(20,30,25,.55);z-index:3000;
@@ -143,6 +145,8 @@
   .modal{
     background:#fff;border-radius:16px;max-width:420px;padding:26px 26px 22px;
     box-shadow:0 12px 40px rgba(0,0,0,.3);
+    /* scrolls at large system font sizes so the buttons stay reachable */
+    max-height:86vh;max-height:86dvh;overflow-y:auto;overscroll-behavior:contain;
   }
   .modal h2{font-family:"Playfair Display",serif;margin:0 0 8px;font-size:24px;color:#1d4d3b}
   .modal-logo{display:block;width:120px;margin:0 auto 4px}
@@ -165,6 +169,7 @@
   .fest-list{margin:0;padding:0;list-style:none;font-size:13.5px;line-height:1.6}
   .fest-list .t{font-weight:700;color:#1d4d3b}
   .fest-empty{font-size:13px;color:#777;font-style:italic}
+  .fest-note{font-size:13.5px;line-height:1.5;color:#444;margin:0}
 
   /* support button pinned at the sidebar bottom */
   #supportBtn{
@@ -184,13 +189,14 @@
       position:fixed;left:0;right:0;bottom:0;width:auto;min-width:0;
       height:72vh;height:72dvh;
       border-right:none;border-radius:18px 18px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.18);
-      /* PEEK: must match the PEEK constant in initSheetSwipe() */
-      transform:translateY(calc(100% - 64px));
+      /* PEEK: must match the PEEK constant in initSheetSwipe().
+         Tall enough to keep the handle clear of phone edge-gesture zones. */
+      transform:translateY(calc(100% - 84px));
       transition:transform .25s ease;
     }
     #sidebar.open{transform:translateY(0)}
     #sheetHandle{
-      display:flex;align-items:center;justify-content:center;height:30px;flex:none;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;height:44px;flex:none;cursor:pointer;
       touch-action:none;
     }
     #sheetHandle .grip{width:44px;height:5px;border-radius:99px;background:#d4cfc0}
@@ -218,7 +224,7 @@
   <aside id="sidebar">
     <div id="sheetHandle" aria-label="Open list"><div class="grip"></div></div>
     <div id="sidebarContent">
-      <input id="search" type="search" placeholder="Search items&hellip; (bikes, sofa, records)" autocomplete="off">
+      <input id="search" type="search" placeholder="Search items&hellip; (bikes, sofa, records)" autocomplete="off" enterkeyhint="search">
       <div id="chips"></div>
       <div id="tabs">
         <button class="tab active" id="tabAll">All Stops</button>
@@ -271,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { address:"1113 De Victor Pl", items:"Baby gear, toys, kid stuff, assorted odds & ends", categories:["Kids & Toys"], lat:40.473842, lon:-79.915858 },
     { address:"912 N Highland Ave", items:"House items, clothes, shoes", categories:["Clothing"], lat:40.471368, lon:-79.919963 },
     { address:"950 Heberton St", items:"Kitchen helper, dinosaurs, baby/toddler items", categories:["Kids & Toys","Kitchen & Home"], lat:40.471496, lon:-79.915653 },
-    { address:"5928 Bryant Ct", items:"Housewares, Kids Clothing, Games and Books, shoes, books, and toys, adult clothing and shoes, sports gear, gardening equipment, a standing desk, and more.  Selling lemonade and snacks too!", categories:["Kids & Toys","Tools & Garden","Clothing"], lat:40.47446, lon:-79.919332 },
+    { address:"5928 Bryant Ct", items:"Housewares, Kids Clothing, Games and Books, shoes, books, and toys, adult clothing and shoes, sports gear, gardening equipment, a standing desk, and more.  Selling lemonade and snacks too!", categories:["Kids & Toys","Tools & Garden","Clothing","Food & Drink"], lat:40.47446, lon:-79.919332 },
     { address:"817 Mellon St", items:"Antique topographic maps, well maintained toddler clothes and toys and accessories, other miscellaneous items.", categories:["Kids & Toys","Clothing","Art & Decor"], lat:40.472065, lon:-79.924581 },
     { address:"1126 N St Clair St", items:"Children and adult clothing, housewares, furniture, games, and more.", categories:["Kids & Toys","Furniture","Clothing"], lat:40.47534, lon:-79.920917 },
     { address:"1312 N Sheridan Ave", items:"Kitchen appliances, sets of dishes, pots and pans, picnic dishes, and other items", categories:["Kitchen & Home"], lat:40.475958, lon:-79.915296 },
@@ -289,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { address:"5836 Wayne Rd", items:"Furniture; Gently used newborn clothes; Baby boy clothes; Toddler girl clothes; Maternity clothes (M/L); Books; Housewares; Plants; Baby items", categories:["Kids & Toys","Furniture","Tools & Garden"], lat:40.471535, lon:-79.920803 },
     { address:"5638 Elgin St", items:"Furniture, baby and toddler toys, clothes, books, and more.", categories:["Kids & Toys","Furniture","Books & Media"], lat:40.477609, lon:-79.922513 },
     { address:"1125 Heberton St", items:"Glassware, kitchen and household items, books, art, some furniture!", categories:["Kitchen & Home","Furniture","Books & Media"], lat:40.473973, lon:-79.915014 },
-    { address:"5534 Stanton Ave", items:"Hello! Many gently worn women's clothing, jewelry and shoes some brand new never worn gotta go. Many miscellaneous items for cheap. New table lamp in box. New bike Still in box. Free can goods again and cookies ?? too! Come on by sure you'll find something you could use ?? ??", categories:["Clothing","Sports & Outdoors","Furniture"], lat:40.471633, lon:-79.927281 },
+    { address:"5534 Stanton Ave", items:"Hello! Many gently worn women's clothing, jewelry and shoes some brand new never worn gotta go. Many miscellaneous items for cheap. New table lamp in box. New bike Still in box. Free can goods again and cookies ?? too! Come on by sure you'll find something you could use ?? ??", categories:["Clothing","Sports & Outdoors","Furniture","Food & Drink"], lat:40.471633, lon:-79.927281 },
     { address:"1310 Browning Rd", items:"Comic books, vinyl, vintage plates house items", categories:["Books & Media","Art & Decor"], lat:40.476213, lon:-79.917158 },
     { address:"1019 N Highland Ave", items:"Household goods, some antiques and furniture", categories:["Furniture","Kitchen & Home","Art & Decor"], lat:40.473263, lon:-79.919738 },
     { address:"1127 Portland St", items:"Original artwork, sewing supplies,misc. household items", categories:["Art & Decor","Kitchen & Home"], lat:40.475972, lon:-79.923392 },
@@ -317,11 +323,11 @@ document.addEventListener('DOMContentLoaded', () => {
     { address:"6050 Grafton St", items:"Kids clothes, shoes, bikes, and toys; women’s clothes and shoes; miscellaneous home goods.", categories:["Kids & Toys","Clothing","Sports & Outdoors"], lat:40.475403, lon:-79.916092 },
     { address:"1018 N Negley Ave", items:"Stop by and browse!", categories:["Misc"], lat:40.474655, lon:-79.924537 },
     { address:"1125 N St Clair St", items:"Larger women's and men's Lulu Lemon clothing, many new with tags or slightly worn, some vinyl records, household goods, other clothing, photographic artwork, and much more.", categories:["Books & Media","Clothing","Kitchen & Home"], lat:40.475353, lon:-79.921485 },
-    { address:"6051 Grafton St", items:"Toys, clothing, books, tools, furniture, plants, waffles, lemonade / coffee", categories:["Tools & Garden","Kids & Toys","Furniture"], lat:40.475797, lon:-79.916143 },
+    { address:"6051 Grafton St", items:"Toys, clothing, books, tools, furniture, plants, waffles, lemonade / coffee", categories:["Tools & Garden","Kids & Toys","Furniture","Food & Drink"], lat:40.475797, lon:-79.916143 },
     { address:"1027 N Sheridan Ave", items:"Baby, toddler, and adult clothes and shoes, baby gear including stroller, carseat and high chair, toys, furniture, yard composter, board games, electronics, appliances", categories:["Kids & Toys","Furniture","Tools & Garden"], lat:40.473115, lon:-79.917167 },
     { address:"925 Mellon St", items:"Clothes, kitchen supplies, home goods", categories:["Kitchen & Home","Clothing"], lat:40.473098, lon:-79.923954 },
     { address:"1001 N Sheridan Ave", items:"All manner of odds & ends (vases, knick-knacks, shoes (kids and adult), candlesticks, dynamite sticks (just kidding), etc.)", categories:["Art & Decor","Kids & Toys","Clothing"], lat:40.47246, lon:-79.917446 },
-    { address:"1201 N Sheridan Ave", items:"Clothes, Funko Pop figures, toys, sports equipment, mobility aids, books, Christmas decor, Queen bed frame, tools, board games, jewelry, HAITIAN METAL ART, BASKETS, & COFFEE to benefit a local nonprofit.", categories:["Art & Decor","Kids & Toys","Clothing"], lat:40.474561, lon:-79.916347 },
+    { address:"1201 N Sheridan Ave", items:"Clothes, Funko Pop figures, toys, sports equipment, mobility aids, books, Christmas decor, Queen bed frame, tools, board games, jewelry, HAITIAN METAL ART, BASKETS, & COFFEE to benefit a local nonprofit.", categories:["Art & Decor","Kids & Toys","Clothing","Food & Drink"], lat:40.474561, lon:-79.916347 },
     { address:"5914 Elgin St", items:"Household items, clothing", categories:["Clothing","Kitchen & Home"], lat:40.476072, lon:-79.918813 },
     { address:"1339 N Sheridan Ave", items:"Stop by and browse!", categories:["Misc"], lat:40.476734, lon:-79.915439 },
     { address:"5633 Elgin St", items:"Coffee table, child and adult rockers, lamps, frames, kitchen items, crockpot, figurines, books, picnic basket, scale, hot tray, cassettes, CDs, bookends of the statues by the Carnegie Museum, miscellaneous items, antique ceramic #2 pickling jug", categories:["Kitchen & Home","Art & Decor","Books & Media"], lat:40.477578, lon:-79.92161 },
@@ -351,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { address:"5718 Elgin St", items:"Household items, crafts, clothing, furniture, pet supplies. Most items will be \"make an offer.\"", categories:["Furniture","Clothing","Kitchen & Home"], lat:40.477055, lon:-79.92104 },
     { address:"1131 Winterton St", items:"Furniture and home items", categories:["Furniture"], lat:40.473448, lon:-79.913645 },
     { address:"5542 Hampton St", items:"Books, kitchenware, bakeware, wall art, decorative pillow covers, rugs, toys, holiday decor, craft items, sports equipment, and more!", categories:["Art & Decor","Kitchen & Home","Kids & Toys"], lat:40.475864, lon:-79.926044 },
-    { address:"841 Heberton St", items:"Free donuts for early birds (while supplies last), home goods, puzzles, books, clothes, free stuff, shoes, etc.", categories:["Clothing","Kids & Toys","Books & Media"], lat:40.470135, lon:-79.916571 },
+    { address:"841 Heberton St", items:"Free donuts for early birds (while supplies last), home goods, puzzles, books, clothes, free stuff, shoes, etc.", categories:["Clothing","Kids & Toys","Books & Media","Food & Drink"], lat:40.470135, lon:-79.916571 },
     { address:"1419 Browning Rd", items:"Light oak kitchen table, kids play kitchen and play food, two kids fisher price basketball hoops. kids clothes and toys.", categories:["Kids & Toys","Furniture","Clothing"], lat:40.476824, lon:-79.916316 },
     { address:"1420 N Negley Ave", items:"Various items", categories:["Misc"], lat:40.479194, lon:-79.922191 },
     { address:"1406 N Highland Ave", items:"Kids and baby toys/clothes/gear; Household misc; Kitchenware; Tableware; Men's/Women's clothes and shoes; Books", categories:["Kids & Toys","Clothing","Books & Media"], lat:40.476659, lon:-79.917057 },
@@ -359,17 +365,17 @@ document.addEventListener('DOMContentLoaded', () => {
     { address:"5807 Wellesley Ave", items:"Beautiful cherry wood dining set, china cabinet, china for 12, framed wall art & paintings, women’s clothing, decor, Christmas ornaments, jewelry, craft supplies, kitchen items, housewares & more!", categories:["Art & Decor","Clothing","Kitchen & Home"], lat:40.473375, lon:-79.922277 },
     { address:"5629 Elgin St", items:"Home Decor..... Wall Hangings, Encyclopedia, other misc home decor, window treatments, etc.", categories:["Art & Decor","Books & Media"], lat:40.477709, lon:-79.921942 },
     { address:"824 N Beatty St", items:"Clothing, Kitchen Appliances, Kitchenware, Various Knick Knacks and Curiosities, Jewelry, $5 Tarot Readings, Original Artwork, Stickers, Bicycles, Bicycle Parts, etc…", categories:["Sports & Outdoors","Clothing","Kitchen & Home"], lat:40.470695, lon:-79.921684 },
-    { address:"5509 Jackson St", items:"Heirloom/container friendly veggie plants, tons of varieties. 12yo artist selling prints of Highland Park landmarks--support a budding young artist! Also kid bikes and a kid-run snow cone stand.", categories:["Tools & Garden","Kids & Toys","Sports & Outdoors"], lat:40.473394, lon:-79.927919 },
+    { address:"5509 Jackson St", items:"Heirloom/container friendly veggie plants, tons of varieties. 12yo artist selling prints of Highland Park landmarks--support a budding young artist! Also kid bikes and a kid-run snow cone stand.", categories:["Tools & Garden","Kids & Toys","Sports & Outdoors","Food & Drink"], lat:40.473394, lon:-79.927919 },
     { address:"1006 Farragut St", items:"Bikes, plants, toys, gardening tools, power tools, books (art, fiction, kids, German), furniture, clothes, jewelry, small kitchen appliances", categories:["Tools & Garden","Kids & Toys","Clothing"], lat:40.472788, lon:-79.917924 },
     { address:"923 Heberton St", items:"Kitchen items, women’s clothing, wedding decor, kid’s sports gear, books", categories:["Kids & Toys","Sports & Outdoors","Books & Media"], lat:40.47116, lon:-79.916188 },
     { address:"1457 Greystone Dr", items:"Women’s clothing xs/s", categories:["Clothing"], lat:40.478233, lon:-79.917482 },
     { address:"732 N Beatty St", items:"Running machine, books, kitchen items", categories:["Sports & Outdoors","Books & Media","Kitchen & Home"], lat:40.469235, lon:-79.922227 },
-    { address:"913 Mellon St", items:"Antiques, Vintage, Salvage, Decor, kids clothes + shoes, mostly girls toddler and little kid sizes - KEENS - rainboots - tennis shoes + some cool FREE stuff + FREE Lemonade!", categories:["Clothing","Kids & Toys","Art & Decor"], lat:40.472753, lon:-79.924144 },
+    { address:"913 Mellon St", items:"Antiques, Vintage, Salvage, Decor, kids clothes + shoes, mostly girls toddler and little kid sizes - KEENS - rainboots - tennis shoes + some cool FREE stuff + FREE Lemonade!", categories:["Clothing","Kids & Toys","Art & Decor","Food & Drink"], lat:40.472753, lon:-79.924144 },
     { address:"5811 Wayne Rd", items:"Stop by and browse!", categories:["Misc"], lat:40.472124, lon:-79.921358 },
     { address:"1234 N Highland Ave", items:"Pre-Estate Sale, Antique Furniture and Items!", categories:["Furniture","Art & Decor"], lat:40.475362, lon:-79.917833 },
     { address:"1232 N Highland Ave", items:"Men’s clothes, children’s clothes, household items, toys", categories:["Kids & Toys","Clothing","Kitchen & Home"], lat:40.475202, lon:-79.917952 },
     { address:"910 Farragut St", items:"2T girls clothes, 3T and 4T boys clothes. Toddler toys, baby gate, training potty. Misc household.", categories:["Kids & Toys","Clothing","Kitchen & Home"], lat:40.471249, lon:-79.918619 },
-    { address:"1135 Mellon St", items:"Baked goods and lemonade", categories:["Misc"], lat:40.475814, lon:-79.922316 },
+    { address:"1135 Mellon St", items:"Baked goods and lemonade", categories:["Food & Drink"], lat:40.475814, lon:-79.922316 },
     { address:"932 Mellon St", items:"Stop by and browse!", categories:["Misc"], lat:40.473156, lon:-79.923437 },
     { address:"6014 Hampton St", items:"Handmade crochet and knitwear items including cute stuffed animals and knitwear clothing and accessories. Unique candles made in recycled containers.", categories:["Clothing","Art & Decor","Kids & Toys"], lat:40.473218, lon:-79.918789 },
     { address:"1211 N Euclid Ave", items:"Clothes,shoes,sneakers,boots,toddler tricycle,costume jewerly", categories:["Clothing","Kids & Toys"], lat:40.476151, lon:-79.919785 },
@@ -405,13 +411,13 @@ document.addEventListener('DOMContentLoaded', () => {
     { address:"5529 Black St", items:"Stop by and browse!", categories:["Misc"], lat:40.469507, lon:-79.929467 },
     { address:"5552 Bryant St", items:"3-story wood Dollhouse, Calico Critters, furniture. Crosley record player—Ottoman w/storage—Sm wood bench&toy chest—Toys&Treasures (Legos/Bionicles/Wii/Barbie/Am Girl)—Household&Holiday—1940s brass-glass chandelier.", categories:["Kids & Toys","Furniture","Electronics"], lat:40.477314, lon:-79.924535 },
     { address:"Jackson St at N Beatty St", items:"Weehoo bike trailer, Yepp kids bike seats, books, toys, lamps, framed art, office & kitchen supplies. Tent: rain or shine!", categories:["Kids & Toys","Sports & Outdoors","Art & Decor"], lat:40.471387, lon:-79.921232 },
-    { address:"1006 N Sheridan Ave", items:"Vintage & modern sports cards, kids' clothes, toys, games, books, household items, collectibles, bake sale treats, and more! Something for kids, collectors, and bargain hunters alike.", categories:["Kids & Toys","Art & Decor","Sports & Outdoors"], lat:40.472575, lon:-79.916809 },
+    { address:"1006 N Sheridan Ave", items:"Vintage & modern sports cards, kids' clothes, toys, games, books, household items, collectibles, bake sale treats, and more! Something for kids, collectors, and bargain hunters alike.", categories:["Kids & Toys","Art & Decor","Sports & Outdoors","Food & Drink"], lat:40.472575, lon:-79.916809 },
     { address:"1373 Heberton St", items:"Housewares, some furniture items, treasures, girls 4T clothing, kids toys, women’s and men’s accessories, lots to sell", categories:["Kids & Toys","Clothing","Furniture"], lat:40.477426, lon:-79.914154 },
     { address:"1401 Browning Rd", items:"Stop by and browse!", categories:["Misc"], lat:40.476347, lon:-79.916654 },
     { address:"805 Heberton St", items:"Art prints, clothing, plants and small trinkets!", categories:["Art & Decor","Tools & Garden","Clothing"], lat:40.468865, lon:-79.91704 },
     { address:"5811 Hays St", items:"Lots of baby items! Cloth diapers, clothing, toys, equipment, etc.; Women’s clothing; Kids toys. Kids book case; Eight sleep mattress topper; Some FREE kids toys, books, clothes.", categories:["Kids & Toys","Books & Media","Clothing"], lat:40.468677, lon:-79.923487 },
     { address:"1448 Greystone Dr", items:"Baby clothes; Baby items; Work out machine; Women’s and men’s clothes; Kitchen items", categories:["Kids & Toys","Sports & Outdoors","Clothing"], lat:40.478164, lon:-79.917173 },
-    { address:"1422 N St Clair St", items:"Dried flowers in vases, succulents, day Lilly plants, hosts plants, Books, clothing, toys and lemonade and chocolate chip cookies, house hold items,", categories:["Tools & Garden","Kids & Toys","Books & Media"], lat:40.478118, lon:-79.919241 },
+    { address:"1422 N St Clair St", items:"Dried flowers in vases, succulents, day Lilly plants, hosts plants, Books, clothing, toys and lemonade and chocolate chip cookies, house hold items,", categories:["Tools & Garden","Kids & Toys","Books & Media","Food & Drink"], lat:40.478118, lon:-79.919241 },
     { address:"1334 N Sheridan Ave", items:"Lego/Duplo: loose bricks, partial builds, unopened parts bags, minifigs, cars/planes/modular townhouse. Photo frames, middle sch. books, throw pillows, twin feather bed from no smoking/no pets home.", categories:["Kids & Toys","Furniture","Books & Media"], lat:40.476526, lon:-79.915059 },
     { address:"1419 N Euclid Ave", items:"Children's Picture Books", categories:["Kids & Toys","Books & Media"], lat:40.477447, lon:-79.918865 },
     { address:"5901 Hampton St", items:"Assorted furniture (kids' full bed w/ built-in bookshelf, twin bed w/ loft, loveseat, dresser, desk, etc.), tools and garden supplies (hand tools, power tools, etc.), miscellaneous items (treadmill, outdoor wicker chairs, etc.)", categories:["Furniture","Tools & Garden","Kids & Toys"], lat:40.474332, lon:-79.920431 },
@@ -419,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { address:"5546 Jackson St", items:"kitchenware, household items & decor (organizational storage, mirrors, artwork), women's clothing & accessories, jewelry, plant/flower pots", categories:["Clothing","Art & Decor","Tools & Garden"], lat:40.472472, lon:-79.926709 },
     { address:"829 Heberton St", items:"Small cabinet; Side table; IKEA table; Desk; Chair; Pottery pieces; Toys; Jewelry; Stationery", categories:["Furniture","Kids & Toys","Clothing"], lat:40.469678, lon:-79.91676 },
     { address:"938 N Highland Ave", items:"Misc. household items.", categories:["Kitchen & Home"], lat:40.472048, lon:-79.919624 },
-    { address:"1106 De Victor Pl", items:"Kid-run Snow-cone Stand, Kids/Womans clothing, NIP Hot Wheels, Games, Toys, Nerf, Books, Vintage Xmas Ornaments, Sports Equipment, DvDs, Wii games, Pokemon, Lego, Electronics, Vintage Items, + more", categories:["Kids & Toys","Books & Media","Electronics"], lat:40.473497, lon:-79.915575 },
+    { address:"1106 De Victor Pl", items:"Kid-run Snow-cone Stand, Kids/Womans clothing, NIP Hot Wheels, Games, Toys, Nerf, Books, Vintage Xmas Ornaments, Sports Equipment, DvDs, Wii games, Pokemon, Lego, Electronics, Vintage Items, + more", categories:["Kids & Toys","Books & Media","Electronics","Food & Drink"], lat:40.473497, lon:-79.915575 },
     { address:"830 N Highland Ave", items:"miscellaneous - children's clothes, jewelry, books, woodwork, video games, home goods", categories:["Kids & Toys","Clothing","Books & Media"], lat:40.470126, lon:-79.920743 },
     { address:"948 N Negley Ave", items:"Alternative clothing / accessories, fun trinkets, electronics, and home decor !", categories:["Clothing","Art & Decor","Electronics"], lat:40.473726, lon:-79.924962 },
     { address:"6441 Jackson St", items:"Garden tiller, yard Shade Scarf, Tacklife drain auger, HP scan/print, books, CDs, and loads of good, cool stuff", categories:["Tools & Garden","Books & Media","Electronics"], lat:40.471342, lon:-79.912874 },
@@ -635,7 +641,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let view = "all";          // "all" | "list"
   let query = "";
   let matched = null;        // Set of matching addresses, or null = no search
-  let activeCat = null;
+  let activeCats = new Set();  // multi-select: stop matches if it has ANY active category
+  const catOk = s => !activeCats.size || s.categories.some(c => activeCats.has(c));
 
   /* ---------- search ---------- */
   let searchTimer = null;
@@ -694,7 +701,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderChips() {
     elChips.innerHTML = CATEGORIES.map(c =>
-      `<span class="chip${activeCat === c ? " active" : ""}" data-cat="${c}">${c}</span>`
+      `<span class="chip${activeCats.has(c) ? " active" : ""}" data-cat="${c}">${c}</span>`
     ).join("");
   }
   elChips.addEventListener("click", ev => {
@@ -709,8 +716,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let html = "";
     if (view === "all") {
       const shown = STOPS.filter(s =>
-        (!matched || matched.has(s.address)) &&
-        (!activeCat || s.categories.includes(activeCat))
+        (!matched || matched.has(s.address)) && catOk(s)
       );
       if (!shown.length) {
         html = `<li class="empty">No stops match &ldquo;${query}&rdquo;. Try another word &mdash; or browse the pins!</li>`;
@@ -726,8 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } else {
       const ord = currentOrder().filter(ad =>
-        (!matched || matched.has(ad)) &&
-        (!activeCat || STOPS[ADDR_IDX[ad]].categories.includes(activeCat))
+        (!matched || matched.has(ad)) && catOk(STOPS[ADDR_IDX[ad]])
       );
       if (!ord.length) {
         html = saved.size
@@ -770,7 +775,7 @@ document.addEventListener('DOMContentLoaded', () => {
     STOPS.forEach(stop => {
       const m = markers[stop.address];
       let vis = true;
-      if (activeCat && !stop.categories.includes(activeCat) && !stop.festival) vis = false;
+      if (!stop.festival && !catOk(stop)) vis = false;
       if (view === "list" && !stop.festival && !saved.has(stop.address)) vis = false;
       setMarkerVisible(m, vis);
       if (!vis) return;
@@ -793,7 +798,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let h = `<div class="pp"><div class="pp-addr">${stop.festival ? "\u{1F3AA} " : ""}${stop.address}</div>`;
     if (stop.festival) {
       h += `<div class="pp-items">${stop.items}</div>`;
-      h += `<div style="margin-bottom:9px"><button class="pill on" onclick="openFestival()">\u{1F3B5} Music · Vendors · Food Trucks</button></div>`;
+      h += `<button class="pill on pp-cta" onclick="openFestival()">\u{1F446} Tap here for the full lineup:<br>music &middot; vendors &middot; food trucks</button>`;
     } else {
       h += `<div class="pp-items">${stop.items}</div>`;
     }
@@ -831,7 +836,7 @@ document.addEventListener('DOMContentLoaded', () => {
     persist(); renderList();
   }
   function filterCategory(cat) {
-    activeCat = activeCat === cat ? null : cat;
+    if (activeCats.has(cat)) activeCats.delete(cat); else activeCats.add(cat);
     render();
   }
   function focusStop(addr) {
@@ -910,6 +915,10 @@ document.addEventListener('DOMContentLoaded', () => {
     h += `<ul class="fest-list">` + VENDORS.map(v =>
       `<li><span class="t">${v.name}</span>${v.items ? " — " + v.items : ""}</li>`
     ).join("") + `</ul>`;
+    h += `<div class="fest-h">\u{1F49A} Visit the HPCC Table</div>` +
+      `<p class="fest-note">Stop by the HPCC table at the festival to learn more about the ` +
+      `Highland Park Community Council, pick up some HPCC merch, and find out how to get ` +
+      `involved in the neighborhood.</p>`;
     document.getElementById("festBody").innerHTML = h;
   }
   function openFestival() {
@@ -941,13 +950,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const elSearch = document.getElementById("search");
   elSearch.addEventListener("input", onSearchInput);
   elSearch.addEventListener("focus", () => { if (isMobile()) sheet.setOpen(true); });
+  // Enter dismisses the keyboard until the bar is tapped again
+  elSearch.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); elSearch.blur(); }
+  });
 
   /* ---------- mobile bottom sheet ---------- */
   function isMobile() { return window.matchMedia("(max-width:640px)").matches; }
   const sheet = initSheetSwipe();
   function initSheetSwipe() {
-    // PEEK must match the CSS: transform:translateY(calc(100% - 64px))
-    const PEEK = 64;
+    // PEEK must match the CSS: transform:translateY(calc(100% - 84px))
+    const PEEK = 84;
     const el = document.getElementById("sidebar");
     const handle = document.getElementById("sheetHandle");
     let open = false, startY = 0, curY = 0, dragging = false, moved = false;
@@ -965,13 +978,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
     window.addEventListener("touchmove", e => {
       if (!dragging) return;
+      // claim the gesture so the browser can't pull-to-refresh mid-drag
+      e.preventDefault();
       const dy = e.touches[0].clientY - startY;
       if (Math.abs(dy) > 8) moved = true;
       const h = el.offsetHeight;
       const base = open ? 0 : h - PEEK;
       curY = Math.min(Math.max(base + dy, 0), h - PEEK);
       el.style.transform = `translateY(${curY}px)`;
-    }, { passive: true });
+    }, { passive: false });
     window.addEventListener("touchend", () => {
       if (!dragging) return;
       dragging = false;

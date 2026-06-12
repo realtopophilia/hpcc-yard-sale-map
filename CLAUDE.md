@@ -52,7 +52,7 @@ The welcome modal doubles as the how-to guide (icon-led bullets) and is reopenab
 
 ## Mobile behavior
 
-≤640 px: the sidebar becomes a bottom sheet (peek height 64 px — the `PEEK` constant in `initSheetSwipe()` must match the CSS `translateY(calc(100% - 64px))`). The handle supports tap and swipe. Tapping the map collapses the sheet. Uses `100dvh` with `100vh` fallback.
+≤640 px: the sidebar becomes a bottom sheet (peek height 84 px — the `PEEK` constant in `initSheetSwipe()` must match the CSS `translateY(calc(100% - 84px))`; kept tall to clear phone edge-gesture zones). The handle supports tap and swipe; the drag handler is non-passive and calls `preventDefault()` plus `overscroll-behavior-y:none` on body to stop pull-to-refresh. Tapping the map collapses the sheet. Uses `100dvh` with `100vh` fallback. Modals are `max-height`-capped and scroll so large system font sizes can always reach the buttons. Filter chips are multi-select (`activeCats` Set, OR semantics); "Food & Drink" is a real category on stops selling lemonade/baked goods/etc. Search blurs on Enter to dismiss the phone keyboard.
 
 ## Pending content (placeholders the owner will supply)
 
