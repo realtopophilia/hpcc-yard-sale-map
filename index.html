@@ -100,6 +100,9 @@
     background:#fff;cursor:pointer;user-select:none;
   }
   .chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .chip-clear{border-color:#c0392b;color:#c0392b;font-weight:600}
+  #resultInfo{font-size:12px;color:#8a8f84;margin:0 0 4px}
+  #resultInfo:empty{display:none}
 
   #tabs{display:flex;gap:6px;margin:8px 0}
   .tab{
@@ -123,11 +126,13 @@
   .stop .items{font-size:12px;color:#6b7066;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .stop.checked .addr,.stop.checked .items{text-decoration:line-through;color:#aaa}
   .stop .star{
-    border:none;background:none;font-size:19px;cursor:pointer;color:#c9c2ae;padding:0 2px;flex:none;line-height:1.2;
+    /* generous padding + negative margin = 44px tap target without a taller row */
+    border:none;background:none;font-size:20px;cursor:pointer;color:#c9c2ae;
+    padding:10px 12px;margin:-10px -8px -10px -4px;flex:none;line-height:1;
   }
   .stop .star.on{color:var(--gold)}
   .stop .drag{cursor:grab;color:#c9c2ae;font-size:15px;padding:2px 2px 0 0;flex:none;touch-action:none}
-  .stop input[type=checkbox]{margin-top:4px;accent-color:#2a6b52;flex:none}
+  .stop input[type=checkbox]{margin-top:4px;accent-color:#2a6b52;flex:none;width:18px;height:18px}
   .empty{padding:24px 10px;text-align:center;color:#8a8f84;font-size:13.5px}
   .sortable-ghost{opacity:.4}
 
@@ -232,6 +237,13 @@
 </head>
 <body>
 
+<noscript>
+  <div style="padding:18px;font-family:sans-serif;text-align:center">
+    This map needs JavaScript to run. You can
+    <a href="2026%20Highland%20Park%20Yard%20Sale%20Printable%20Map.pdf">download the printable map (PDF)</a> instead.
+  </div>
+</noscript>
+
 <header>
   <a id="treeLink" href="https://hpccpgh.org/yardsale" target="_blank" rel="noopener" title="HPCC Yard Sale page">
     <img src="tree-white.png" alt="HPCC tree logo">
@@ -261,6 +273,7 @@
         <button class="tab active" id="tabAll">All Stops</button>
         <button class="tab" id="tabList">My List</button>
       </div>
+      <div id="resultInfo"></div>
       <ul id="stopList"></ul>
       <a id="supportBtn" href="https://hpcc.app.neoncrm.com/forms/donate" target="_blank" rel="noopener">&#128155; Support HPCC</a>
     </div>
@@ -331,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { address:"5836 Wayne Rd", items:"Furniture; Gently used newborn clothes; Baby boy clothes; Toddler girl clothes; Maternity clothes (M/L); Books; Housewares; Plants; Baby items", categories:["Kids & Toys","Furniture","Tools & Garden"], lat:40.471535, lon:-79.920803 },
     { address:"5638 Elgin St", items:"Furniture, baby and toddler toys, clothes, books, and more.", categories:["Kids & Toys","Furniture","Books & Media"], lat:40.477175, lon:-79.921638 },
     { address:"1125 Heberton St", items:"Glassware, kitchen and household items, books, art, some furniture!", categories:["Kitchen & Home","Furniture","Books & Media"], lat:40.473973, lon:-79.915014 },
-    { address:"5534 Stanton Ave", items:"Hello! Many gently worn women's clothing, jewelry and shoes some brand new never worn gotta go. Many miscellaneous items for cheap. New table lamp in box. New bike Still in box. Free can goods again and cookies ?? too! Come on by sure you'll find something you could use ?? ??", categories:["Clothing","Sports & Outdoors","Furniture","Food & Drink"], lat:40.471633, lon:-79.927281 },
+    { address:"5534 Stanton Ave", items:"Hello! Many gently worn women's clothing, jewelry and shoes some brand new never worn gotta go. Many miscellaneous items for cheap. New table lamp in box. New bike Still in box. Free can goods again and cookies too! Come on by sure you'll find something you could use!", categories:["Clothing","Sports & Outdoors","Furniture","Food & Drink"], lat:40.471633, lon:-79.927281 },
     { address:"1310 Browning Rd", items:"Comic books, vinyl, vintage plates house items", categories:["Books & Media","Art & Decor"], lat:40.476213, lon:-79.917158 },
     { address:"1019 N Highland Ave", items:"Household goods, some antiques and furniture", categories:["Furniture","Kitchen & Home","Art & Decor"], lat:40.473263, lon:-79.919738 },
     { address:"1127 Portland St", items:"Original artwork, sewing supplies,misc. household items", categories:["Art & Decor","Kitchen & Home"], lat:40.475972, lon:-79.923392 },
@@ -379,8 +392,8 @@ document.addEventListener('DOMContentLoaded', () => {
     { address:"1122 N Sheridan Ave", items:"Bookshelves, books, DVDs, stuffed animals, toys, clothing, shoes", categories:["Kids & Toys","Books & Media","Clothing"], lat:40.473865, lon:-79.916221 },
     { address:"6031 Wellesley Ave", items:"Furniture; household items; men's and women's clothes/shoes; hunting clothes; suits; lifestyle shoes; little odds and ends and more!", categories:["Clothing","Furniture","Kitchen & Home"], lat:40.472601, lon:-79.918481 },
     { address:"5553 Beverly Pl", items:"Toys and collectors items, vintage toys, clothes (women's size 14 + XL), Big men suits, sport jacket, ties, shirts", categories:["Clothing","Art & Decor","Kids & Toys"], lat:40.476818, lon:-79.924749 },
-    { address:"830 Collins Ave", items:"Holiday Items, garden itmes, pans, coffee pot, air fryer, queen sheet set, steak knife and fork set, baskets, toyes, other household items", categories:["Kitchen & Home","Art & Decor","Tools & Garden"], lat:40.469901, lon:-79.917122 },
-    { address:"1227 N Sheridan Ave", items:"Vintage, furniture, Like new bikes, Luggage sets, new small appliances, antique vintage books, tools, household, kitchen, display cases, linens and comfortor sets, pictures, automotive, cookware, collectibles, coins, paper ephemera, political, clocks, antique radios, dog stroller, electric tools, pottery", categories:["Kitchen & Home","Art & Decor","Books & Media"], lat:40.475138, lon:-79.915955 },
+    { address:"830 Collins Ave", items:"Holiday Items, garden items, pans, coffee pot, air fryer, queen sheet set, steak knife and fork set, baskets, toys, other household items", categories:["Kitchen & Home","Art & Decor","Tools & Garden"], lat:40.469901, lon:-79.917122 },
+    { address:"1227 N Sheridan Ave", items:"Vintage, furniture, Like new bikes, Luggage sets, new small appliances, antique vintage books, tools, household, kitchen, display cases, linens and comforter sets, pictures, automotive, cookware, collectibles, coins, paper ephemera, political, clocks, antique radios, dog stroller, electric tools, pottery", categories:["Kitchen & Home","Art & Decor","Books & Media"], lat:40.475138, lon:-79.915955 },
     { address:"116 High Park Pl", items:"Furniture, household items, glassware, serving pieces, misc", categories:["Kitchen & Home","Furniture"], lat:40.477508, lon:-79.915955 },
     { address:"1011 N Euclid Ave", items:"Amazing collection of tools, antiques, furniture, and other household/garden items! MUST-VISIT!", categories:["Tools & Garden","Furniture","Kitchen & Home"], lat:40.473491, lon:-79.921461 },
     { address:"1415 Mellon St", items:"MCM 3 drawer cabinet, vintage metal bar cart, women's Schwinn bike, pair of rattan back dining chairs, brand new outdoor string lights, various decor and household items.", categories:["Furniture","Art & Decor","Sports & Outdoors"], lat:40.478409, lon:-79.920723 },
@@ -414,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { address:"1135 Mellon St", items:"Baked goods and lemonade", categories:["Food & Drink"], lat:40.475814, lon:-79.922316 },
     { address:"932 Mellon St", items:"Stop by and browse!", categories:["Misc"], lat:40.473156, lon:-79.923437 },
     { address:"6014 Hampton St", items:"Handmade crochet and knitwear items including cute stuffed animals and knitwear clothing and accessories. Unique candles made in recycled containers.", categories:["Clothing","Art & Decor","Kids & Toys"], lat:40.473218, lon:-79.918789 },
-    { address:"1211 N Euclid Ave", items:"Clothes,shoes,sneakers,boots,toddler tricycle,costume jewerly", categories:["Clothing","Kids & Toys"], lat:40.476147, lon:-79.91977 },
+    { address:"1211 N Euclid Ave", items:"Clothes,shoes,sneakers,boots,toddler tricycle,costume jewelry", categories:["Clothing","Kids & Toys"], lat:40.476147, lon:-79.91977 },
     { address:"1025 N Highland Ave", items:"Household items, vintage comic books, dvds, etc", categories:["Books & Media","Kitchen & Home","Art & Decor"], lat:40.473413, lon:-79.919661 },
     { address:"1119 De Victor Pl", items:"Mid-century dining room table Etched Glass Rose Point38 pieces Lenox Holiday dishes Mad River Adventure 14 Canoe Canning supplies Doll House toys + books King size weighted blanket Combo drip coffee maker Cuisinart processor Suitcases", categories:["Kitchen & Home","Kids & Toys","Sports & Outdoors"], lat:40.473931, lon:-79.915818 },
     { address:"5615 Elgin St", items:"Exercise bicycle; flat screen tv; fiesta ware; vintage women's clothing; skin care products; vintage sofa", categories:["Sports & Outdoors","Furniture","Electronics"], lat:40.477948, lon:-79.922479 },
@@ -434,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { address:"6017 Stanton Ave", items:"Stop by and browse!", categories:["Misc"], lat:40.469663, lon:-79.920318 },
     { address:"6609 Jackson St", items:"Furniture, kitchen items, art supplies, gardening supplies, books, clothing, and house decor", categories:["Art & Decor","Furniture","Tools & Garden"], lat:40.474345, lon:-79.912408 },
     { address:"1304 N Sheridan Ave", items:"Stop by and browse!", categories:["Misc"], lat:40.4758, lon:-79.915368 },
-    { address:"1030 Heths Ave", items:"Two adult bicycles; Tools; Large slow cooker, posters, TV sound bar; suitcases; storage bins; Portmeirion Botanic Garden Cups and suacers; planters/pots; stemware; women's clothing (size 12); hiking boots (size 10); cat supplies; large comforter", categories:["Kitchen & Home","Tools & Garden","Sports & Outdoors"], lat:40.476014, lon:-79.928121 },
+    { address:"1030 Heths Ave", items:"Two adult bicycles; Tools; Large slow cooker, posters, TV sound bar; suitcases; storage bins; Portmeirion Botanic Garden Cups and saucers; planters/pots; stemware; women's clothing (size 12); hiking boots (size 10); cat supplies; large comforter", categories:["Kitchen & Home","Tools & Garden","Sports & Outdoors"], lat:40.476014, lon:-79.928121 },
     { address:"1217 Heberton St", items:"Misc household stuff, children's books, posters, small rugs", categories:["Kitchen & Home","Kids & Toys","Books & Media"], lat:40.474858, lon:-79.914679 },
     { address:"5919 Hampton St", items:"Bikes, toys, tools, fabric, ceramics, books, and more!", categories:["Art & Decor","Kids & Toys","Sports & Outdoors"], lat:40.47417, lon:-79.919921 },
     { address:"710 Mellon St", items:"Household, lights, clothing", categories:["Clothing","Kitchen & Home"], lat:40.469645, lon:-79.925604 },
@@ -442,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { address:"915 Heberton St", items:"Furniture, housewares, CDs, DVDs, clothes, small appliances, books, kitchen ware, dishes, lawn mower, Christmas decor", categories:["Kitchen & Home","Books & Media","Tools & Garden"], lat:40.470948, lon:-79.916252 },
     { address:"1159 King Ave", items:"Clothes, books, art supplies, ceramics, house plant propagations, trinkets, bikes, etc.", categories:["Art & Decor","Sports & Outdoors","Tools & Garden"], lat:40.477919, lon:-79.926562 },
     { address:"6433 Jackson St", items:"Men's racing bike, American Girl doll/outfits/furniture, bassinet, Baby Bjorn bouncer, children's toys/clothing/outer wear, rice cooker", categories:["Kids & Toys","Clothing","Sports & Outdoors"], lat:40.471095, lon:-79.912904 },
-    { address:"821 N Highland Ave", items:"Books, Jewelry (old, new), clothing (men and women), pic.frames, Handmade items including photo note cards, pok-e-mon cards, misc. household goods. Free stuff.", categories:["Clothing","Kids & Toys","Books & Media"], lat:40.470495, lon:-79.921016 },
+    { address:"821 N Highland Ave", items:"Books, Jewelry (old, new), clothing (men and women), pic.frames, Handmade items including photo note cards, Pokemon cards, misc. household goods. Free stuff.", categories:["Clothing","Kids & Toys","Books & Media"], lat:40.470495, lon:-79.921016 },
     { address:"6041 Grafton St", items:"Miscellaneous household items, yard tools, sporting goods (bike, golf and camping related), costume jewelry, kitchenware.", categories:["Sports & Outdoors","Tools & Garden","Clothing"], lat:40.475845, lon:-79.916491 },
     { address:"5529 Black St", items:"Stop by and browse!", categories:["Misc"], lat:40.469526, lon:-79.928894 },
     { address:"5552 Bryant St", items:"3-story wood Dollhouse, Calico Critters, furniture. Crosley record player—Ottoman w/storage—Sm wood bench&toy chest—Toys&Treasures (Legos/Bionicles/Wii/Barbie/Am Girl)—Household&Holiday—1940s brass-glass chandelier.", categories:["Kids & Toys","Furniture","Electronics"], lat:40.477314, lon:-79.924535 },
@@ -453,8 +466,8 @@ document.addEventListener('DOMContentLoaded', () => {
     { address:"805 Heberton St", items:"Art prints, clothing, plants and small trinkets!", categories:["Art & Decor","Tools & Garden","Clothing"], lat:40.468865, lon:-79.91704 },
     { address:"5811 Hays St", items:"Lots of baby items! Cloth diapers, clothing, toys, equipment, etc.; Women’s clothing; Kids toys. Kids book case; Eight sleep mattress topper; Some FREE kids toys, books, clothes.", categories:["Kids & Toys","Books & Media","Clothing"], lat:40.468677, lon:-79.923487 },
     { address:"1448 Greystone Dr", items:"Baby clothes; Baby items; Work out machine; Women’s and men’s clothes; Kitchen items", categories:["Kids & Toys","Sports & Outdoors","Clothing"], lat:40.478164, lon:-79.917173 },
-    { address:"1422 N St Clair St", items:"Dried flowers in vases, succulents, day Lilly plants, hosts plants, Books, clothing, toys and lemonade and chocolate chip cookies, house hold items,", categories:["Tools & Garden","Kids & Toys","Books & Media","Food & Drink"], lat:40.478118, lon:-79.919241 },
-    { address:"1334 N Sheridan Ave", items:"Lego/Duplo: loose bricks, partial builds, unopened parts bags, minifigs, cars/planes/modular townhouse. Photo frames, middle sch. books, throw pillows, twin feather bed from no smoking/no pets home.", categories:["Kids & Toys","Furniture","Books & Media"], lat:40.476526, lon:-79.915059 },
+    { address:"1422 N St Clair St", items:"Dried flowers in vases, succulents, daylily plants, hosta plants, Books, clothing, toys and lemonade and chocolate chip cookies, household items,", categories:["Tools & Garden","Kids & Toys","Books & Media","Food & Drink"], lat:40.478118, lon:-79.919241 },
+    { address:"1334 N Sheridan Ave", items:"Lego/Duplo: loose bricks, partial builds, unopened parts bags, minifigs, cars/planes/modular townhouse. Photo frames, middle school books, throw pillows, twin feather bed from no smoking/no pets home.", categories:["Kids & Toys","Furniture","Books & Media"], lat:40.476526, lon:-79.915059 },
     { address:"1419 N Euclid Ave", items:"Children's Picture Books", categories:["Kids & Toys","Books & Media"], lat:40.477853, lon:-79.91879 },
     { address:"5901 Hampton St", items:"Assorted furniture (kids' full bed w/ built-in bookshelf, twin bed w/ loft, loveseat, dresser, desk, etc.), tools and garden supplies (hand tools, power tools, etc.), miscellaneous items (treadmill, outdoor wicker chairs, etc.)", categories:["Furniture","Tools & Garden","Kids & Toys"], lat:40.474332, lon:-79.920431 },
     { address:"6639 Stanton Ave", items:"Espresso machine, photography equipment (cameras, lighting, backdrops), craft supplies, sewing fabric, tools, analog media (CDs, DVDs, games), household items, kitchen items.", categories:["Art & Decor","Books & Media","Electronics"], lat:40.473778, lon:-79.911298 },
@@ -563,6 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // search-term expansion map
   const SYNONYMS = {
     bike:    ["bicycle", "bikes", "cycling"],
+    bikes:   ["bike", "bicycle"],
     bicycle: ["bike", "bikes"],
     couch:   ["sofa", "sectional", "loveseat"],
     sofa:    ["couch", "sectional", "loveseat"],
@@ -732,21 +746,34 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateTabs() {
     elTabAll.classList.toggle("active", view === "all");
     elTabList.classList.toggle("active", view === "list");
-    elTabList.textContent = "My List" + (saved.size ? ` (${saved.size})` : "");
+    const done = [...saved].filter(a => checked.has(a)).length;
+    elTabList.textContent = "My List" +
+      (saved.size ? (done ? ` (${done}/${saved.size} ✓)` : ` (${saved.size})`) : "");
   }
 
   function renderChips() {
-    elChips.innerHTML = CATEGORIES.map(c =>
+    let html = CATEGORIES.map(c =>
       `<span class="chip${activeCats.has(c) ? " active" : ""}" data-cat="${c}">${c}</span>`
     ).join("");
+    if (activeCats.size || query) html += `<span class="chip chip-clear">Clear all &times;</span>`;
+    elChips.innerHTML = html;
+  }
+  function clearAll() {
+    activeCats.clear();
+    query = ""; matched = null;
+    elSearch.value = "";
+    render();
   }
   elChips.addEventListener("click", ev => {
     const chip = ev.target.closest(".chip");
-    if (chip) filterCategory(chip.dataset.cat);
+    if (!chip) return;
+    if (chip.classList.contains("chip-clear")) clearAll();
+    else filterCategory(chip.dataset.cat);
   });
 
   function escAttr(s) { return s.replace(/"/g, "&quot;"); }
 
+  const elInfo = document.getElementById("resultInfo");
   function renderList() {
     renderChips();
     let html = "";
@@ -754,6 +781,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const shown = STOPS.filter(s =>
         (!matched || matched.has(s.address)) && catOk(s)
       );
+      const houses = shown.filter(s => !s.festival).length;
+      elInfo.textContent = (matched || activeCats.size)
+        ? `Showing ${houses} of ${HOUSE_COUNT} stops` + (query ? ` matching “${query}”` : "")
+        : "";
       if (!shown.length) {
         html = `<li class="empty">No stops match &ldquo;${query}&rdquo;. Try another word &mdash; or browse the pins!</li>`;
       } else {
@@ -767,6 +798,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join("");
       }
     } else {
+      elInfo.textContent = "";
       const ord = currentOrder().filter(ad =>
         (!matched || matched.has(ad)) && catOk(STOPS[ADDR_IDX[ad]])
       );
@@ -869,7 +901,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   function toggleChecked(addr) {
     if (checked.has(addr)) checked.delete(addr); else checked.add(addr);
-    persist(); renderList();
+    persist(); renderList(); updateTabs();
   }
   function filterCategory(cat) {
     if (activeCats.has(cat)) activeCats.delete(cat); else activeCats.add(cat);
